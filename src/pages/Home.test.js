@@ -53,9 +53,9 @@ describe('Home Component', () => {
 
   test('renders filter dropdowns', () => {
     renderWithProviders(<Home />);
-    expect(screen.getByText('All Cuisines')).toBeInTheDocument();
-    expect(screen.getByText('All Diets')).toBeInTheDocument();
-    expect(screen.getByText('All Meals')).toBeInTheDocument();
+    expect(screen.getByLabelText('Cuisine')).toBeInTheDocument();
+    expect(screen.getByLabelText('Diet Type')).toBeInTheDocument();
+    expect(screen.getByLabelText('Meal Type')).toBeInTheDocument();
   });
 
   test('displays recipe cards', () => {
