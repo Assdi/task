@@ -46,7 +46,6 @@
   "jest": {
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
-    },
-    "testEnvironment": "jsdom"
+    }
   }
 }
