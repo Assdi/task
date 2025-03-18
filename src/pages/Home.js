@@ -3,8 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Box, Container, Grid, TextField, MenuItem, Typography } from '@mui/material';
 import { setSearchTerm, setFilter } from '../store/recipesSlice';
 import { CUISINES, DIET_TYPES, MEAL_TYPES } from '../constants/mockData';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { filteredRecipes } = useSelector((state) => state.recipes);
   const [searchInput, setSearchInput] = useState('');
@@ -17,6 +19,10 @@ const Home = () => {
 
   const handleFilterChange = (filterType, value) => {
     dispatch(setFilter({ [filterType]: value }));
+  };
+
+  const handleRecipeClick = (recipeId) => {
+    navigate(`/recipe/${recipeId}`);
   };
 
   return (
@@ -94,7 +100,14 @@ const Home = () => {
                   border: '1px solid #ddd',
                   borderRadius: 2,
                   height: '100%',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    boxShadow: 3,
+                    transform: 'translateY(-2px)',
+                    transition: 'all 0.2s'
+                  }
                 }}
+                onClick={() => handleRecipeClick(recipe.id)}
               >
                 <Typography variant="h6" gutterBottom>
                   {recipe.title}
