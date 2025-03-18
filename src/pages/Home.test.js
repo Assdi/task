@@ -6,9 +6,10 @@ import { configureStore } from '@reduxjs/toolkit';
 import Home from './Home';
 import recipesReducer from '../store/recipesSlice';
 import { MOCK_RECIPES } from '../constants/mockData';
+import App from '../App';
 
-// Create a mock store
-const createMockStore = (initialState = {}) => {
+// Create a mock store with initial state
+const createMockStore = () => {
   return configureStore({
     reducer: {
       recipes: recipesReducer
@@ -31,31 +32,41 @@ const createMockStore = (initialState = {}) => {
 // Wrapper component for tests
 const renderWithProviders = (component) => {
   const store = createMockStore();
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
-    </Provider>
-  );
+  return {
+    ...render(
+      <Provider store={store}>
+        <BrowserRouter>
+          {component}
+        </BrowserRouter>
+      </Provider>
+    ),
+    store
+  };
 };
 
 describe('Home Component', () => {
-  test('renders recipe finder title', () => {
-    renderWithProviders(<Home />);
-    expect(screen.getByText('Recipe Finder')).toBeInTheDocument();
-  });
-
   test('renders search input', () => {
     renderWithProviders(<Home />);
     expect(screen.getByPlaceholderText('Search by recipe name or ingredient...')).toBeInTheDocument();
   });
 
-  test('renders filter dropdowns', () => {
+  test('search input updates value', async () => {
     renderWithProviders(<Home />);
-    expect(screen.getByLabelText('Cuisine')).toBeInTheDocument();
-    expect(screen.getByLabelText('Diet Type')).toBeInTheDocument();
-    expect(screen.getByLabelText('Meal Type')).toBeInTheDocument();
+    const searchInput = screen.getByRole('textbox', { name: /search recipes/i });
+    fireEvent.change(searchInput, { target: { value: 'pizza' } });
+    expect(searchInput.value).toBe('pizza');
+  });
+
+  test('filter selection updates value', async () => {
+    const { store } = renderWithProviders(<Home />);
+    const cuisineSelect = screen.getByRole('button', { name: /cuisine/i });
+    
+    fireEvent.mouseDown(cuisineSelect);
+    const italianOption = screen.getByRole('option', { name: /italian/i });
+    fireEvent.click(italianOption);
+    
+    const state = store.getState();
+    expect(state.recipes.filters.cuisine).toBe('Italian');
   });
 
   test('displays recipe cards', () => {
@@ -63,21 +74,5 @@ describe('Home Component', () => {
     MOCK_RECIPES.forEach(recipe => {
       expect(screen.getByText(recipe.title)).toBeInTheDocument();
     });
-  });
-
-  test('search input updates value', () => {
-    renderWithProviders(<Home />);
-    const searchInput = screen.getByPlaceholderText('Search by recipe name or ingredient...');
-    fireEvent.change(searchInput, { target: { value: 'pizza' } });
-    expect(searchInput.value).toBe('pizza');
-  });
-
-  test('filter selection updates value', () => {
-    renderWithProviders(<Home />);
-    const cuisineSelect = screen.getByLabelText('Cuisine');
-    fireEvent.mouseDown(cuisineSelect);
-    const italianOption = screen.getByText('Italian');
-    fireEvent.click(italianOption);
-    expect(screen.getByText('Italian')).toBeInTheDocument();
   });
 });

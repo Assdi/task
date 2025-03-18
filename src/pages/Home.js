@@ -28,9 +28,6 @@ const Home = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Recipe Finder
-        </Typography>
 
         {/* Search and Filters */}
         <Grid container spacing={2} sx={{ mb: 4 }}>
